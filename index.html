@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ARX Robotics</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <style>
+        * { box-sizing: border-box; }
+
+        /* ── LOGOTIPO ── */
+        .logoRobotics img {
+            display: block;
+            margin: 0 auto;
+            max-width: 100%;
+            height: auto;
+        }
+        .logoFinal img {
+            display: block;
+            height: 80px;
+            margin: 0 auto;
+        }
+
+        /* ── BARRA DE NAVEGACIÓN ── */
+        .barraContenidos {
+            background: #0F2E5E;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: center;
+            min-height: 60px;
+            padding: 4px 0;
+        }
+        .botonInformacion {
+            height: 46px;
+            line-height: 46px;
+            text-align: center;
+            font-family: Inter, sans-serif;
+            font-size: clamp(0.65rem, 2.5vw, 0.85rem);
+            padding: 0 10px;
+            white-space: nowrap;
+        }
+        .botonInformacion:hover { background-color: #ffa000; }
+
+        /* ── SUBMENÚS ── */
+        .menu {
+            position: relative;
+            display: inline-block;
+        }
+        .submenu {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            z-index: 200;
+            width: 160px;
+        }
+        .menu:hover .submenu {
+            display: flex;
+            flex-direction: column;
+        }
+        .menuInformacion {
+            background-color: white;
+            border: 1px solid #ccc;
+            height: 46px;
+            line-height: 46px;
+            text-align: center;
+            color: black;
+            font-family: Inter, sans-serif;
+            font-size: clamp(0.7rem, 2.5vw, 0.85rem);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .menuInformacion:hover { background-color: #ffa000; }
+
+        /* ── CARRUSEL ── */
+        .carrusel-wrapper {
+            position: relative;
+            width: 100%;
+            height: 55vw;
+            min-height: 200px;
+            max-height: 55vh;
+            overflow: hidden;
+            background: #061830;
+        }
+        .carrusel-slide {
+            position: absolute;
+            inset: 0;
+            opacity: 0;
+            transition: opacity 1s ease-in-out;
+        }
+        .carrusel-slide.activo { opacity: 1; }
+        .carrusel-slide img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+        .carrusel-slide::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to bottom, rgba(6,24,48,0.1) 0%, rgba(6,24,48,0.6) 100%);
+        }
+        .carrusel-texto {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 10;
+            text-align: center;
+            color: white;
+            text-shadow: 0 2px 8px rgba(0,0,0,0.7);
+            pointer-events: none;
+            width: 90%;
+        }
+        .carrusel-texto h2 {
+            font-size: clamp(0.95rem, 4vw, 2.2rem);
+            font-family: 'Trebuchet MS', sans-serif;
+            font-weight: 700;
+            letter-spacing: 1px;
+            margin: 0 0 4px;
+        }
+        .carrusel-texto p {
+            font-size: clamp(0.75rem, 2.5vw, 1rem);
+            margin: 0;
+            opacity: 0.9;
+        }
+        .carrusel-puntos {
+            position: absolute;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 8px;
+            z-index: 20;
+        }
+        .punto {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.4);
+            border: 2px solid rgba(255,255,255,0.7);
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        .punto.activo {
+            background: #ffa000;
+            border-color: #ffa000;
+        }
+        .carrusel-flecha {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 20;
+            background: rgba(15,46,94,0.6);
+            border: none;
+            color: white;
+            font-size: clamp(1.2rem, 4vw, 1.8rem);
+            width: clamp(32px, 8vw, 44px);
+            height: clamp(32px, 8vw, 44px);
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.3s;
+        }
+        .carrusel-flecha:hover { background: #ffa000; }
+        .flecha-izq { left: 8px; }
+        .flecha-der { right: 8px; }
+
+        /* ── CONTENIDO DINÁMICO ── */
+        #informacion, #reglamento {
+            padding: 10px 16px;
+            font-size: clamp(0.85rem, 3vw, 1rem);
+        }
+        #informacion img, #reglamento img {
+            max-width: 100% !important;
+            height: auto !important;
+        }
+
+        /* ── PIE DE PÁGINA ── */
+        .piePagina {
+            background-color: #0F2E5E;
+            color: white;
+            text-align: center;
+            padding: 20px 16px;
+            font-size: clamp(0.75rem, 2.5vw, 0.9rem);
+        }
+        .logosRedes {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            padding: 10px 0;
+        }
+        .logosRedes img {
+            height: clamp(24px, 6vw, 35px);
+            width: auto;
+            cursor: pointer;
+        }
+
+        .oculto { display: none !important; }
+
+        /* ── SECCIONES DE CONTENIDO ── */
+        .negritas {
+            font-weight: bold;
+            font-family: Inter;
+            font-size: clamp(1.2rem, 5vw, 2.2rem);
+        }
+        .titulo {
+            display: block;
+            text-align: center;
+        }
+
+        /* Nosotros: contenedor flex horizontal en escritorio */
+        .contenedor {
+            display: flex;
+            align-items: flex-start;
+            gap: 20px;
+            font-size: clamp(0.9rem, 2.5vw, 1.1rem);
+            margin: clamp(16px, 4vw, 40px);
+        }
+        .contenidos img {
+            height: clamp(160px, 30vw, 500px);
+            width: auto;
+            flex-shrink: 0;
+        }
+        .contenedor ul {
+            padding-left: 0;
+            margin: 0;
+        }
+        .contenedor ul li {
+            margin-top: 8px;
+            list-style-type: disc !important;
+            padding-left: 20px !important;
+        }
+        .contenedor li {
+            display: list-item !important;
+        }
+
+        /* Tarjetas de acreditaciones e historial */
+        .tarjeta {
+            display: flex;
+            align-items: flex-start;
+            gap: 20px;
+            font-size: clamp(0.85rem, 2.5vw, 1.1rem);
+            margin: clamp(16px, 4vw, 60px) clamp(16px, 6vw, 100px);
+        }
+        .tarjeta ul {
+            padding-left: 0;
+            margin: 0;
+        }
+        .tarjeta ul li {
+            margin-top: 6px;
+            padding-left: 20px !important;
+        }
+        .tarjeta img {
+            width: clamp(140px, 35vw, 500px);
+            border: 4px solid #0F2E5E;
+            border-radius: 10px;
+            padding: 8px;
+            background-color: white;
+            flex-shrink: 0;
+        }
+        .trofeos img {
+            width: clamp(80px, 20vw, 200px);
+            border: none !important;
+            padding: 0 !important;
+        }
+
+        /* Historial */
+        .historia img {
+            width: clamp(120px, 30vw, 300px) !important;
+            border: 4px solid #ffa000 !important;
+            border-radius: 10px;
+            padding: 8px;
+            background-color: white;
+            flex-shrink: 0;
+        }
+
+        /* ── RESPONSIVE MÓVIL ── */
+        @media (max-width: 600px) {
+            /* Submenú último botón no se sale */
+            .submenu { width: 130px; }
+            .menu:last-of-type .submenu {
+                left: auto;
+                right: 0;
+            }
+
+            /* Nosotros y Objetivos: apila verticalmente */
+            .contenedor {
+                flex-direction: column;
+                align-items: center;
+            }
+            .contenidos img {
+                height: auto;
+                width: 80%;
+                max-width: 300px;
+            }
+
+            /* Tarjetas: apila verticalmente */
+            .tarjeta {
+                flex-direction: column;
+                align-items: center;
+                margin: 16px;
+            }
+            .tarjeta img {
+                width: 90%;
+                max-width: 340px;
+            }
+            .trofeos {
+                width: 100%;
+                text-align: center;
+            }
+            .trofeos img {
+                width: clamp(60px, 25vw, 120px) !important;
+            }
+            .apuntado{
+                cursor: pointer;
+            }
+        }
+
+        @media (min-width: 481px) {
+            .barraContenidos { justify-content: flex-end; }
+        }
+        #Roles{
+                margin: 40px;
+                padding: 30px 0;
+                border-top: 5px solid #0F2E5E;
+                border-bottom: 5px solid #0F2E5E;
+            }
+
+            .titulo-roles{
+                text-align: center;
+                font-size: 40px;
+                font-weight: bold;
+                color: #0F2E5E;
+                margin-bottom: 40px;
+            }
+
+            .tarjeta-rol{
+                display: flex;
+                align-items: center;
+                gap: 30px;
+                margin-bottom: 30px;
+            }
+
+            .tarjeta-rol img{
+                width: 220px;
+                height: 300px;
+
+                object-fit: cover;
+
+                border: 8px solid #0F2E5E;
+                border-radius: 50%;
+
+                padding: 5px;
+                background-color: white;
+            }
+
+            .info-rol{
+                font-size: 20px;
+            }
+
+            .info-rol p{
+                margin: 10px 0;
+            }
+    </style>
+</head>
+<body>
+
+    <!-- Logotipo -->
+    <div id="logotipo">
+        <div class="logoRobotics">
+            <img id="imgRobotics" src="Recursos/LOGOARX2.jpeg" alt="Logotipo Robotics">
+        </div>
+    </div>
+
+    <!-- Barra de navegación -->
+    <div class="barraContenidos">
+        <a href="#" class="btn barraContenidos botonInformacion" onclick="mostrarNoticias()">INICIO</a>
+
+        <div class="menu">
+            <a href="#" class="btn barraContenidos botonInformacion">INFORMACIÓN</a>
+            <div class="submenu">
+                <a href="#" class="btn menuInformacion" onclick="mostrarNosotros()">Nosotros</a>
+                <a href="#" class="btn menuInformacion" onclick="mostrarHistorial()">Historial</a>
+                <a href="#" class="btn menuInformacion" onclick="mostrarAcreditaciones()">Acreditaciones</a>
+                <a href="#" class="btn menuInformacion">Ubicación</a>
+                <a href="#" class="btn menuInformacion">Contactos</a>
+            </div>
+        </div>
+
+        <div class="menu">
+            <a href="#" class="btn barraContenidos botonInformacion">REGISTRO</a>
+            <div class="submenu">
+                <a href="#" class="btn menuInformacion" onclick="mostrarReglamento()">Reglamento</a>
+                <a href="#" class="btn menuInformacion" onclick="window.open('https://docs.google.com/forms/d/e/1FAIpQLSevy-NrSVbX_e-lk4zULFPwJWygvZOoxWMYB_W5sidLSTC_hQ/viewform?usp=header','_blank')">Formulario</a>
+            </div>
+        </div>
+
+        <a href="#" class="btn barraContenidos botonInformacion" onclick="mostrarHorarios()">HORARIOS</a>
+    </div>
+
+    <!-- Carrusel -->
+    <div class="carrusel-wrapper" id="carrusel">
+        <div class="carrusel-slide activo">
+            <img src="Recursos/AlumnosArx.jpeg" alt="Slide 1">
+            <div class="carrusel-texto"><h2>Bienvenidos a ARX Robotics</h2></div>
+        </div>
+        <div class="carrusel-slide">
+            <img src="Recursos/Competencia.jpeg" alt="Slide 2">
+            <div class="carrusel-texto">
+                <h2>Competencias de Robótica</h2>
+                <p>Participamos en torneos nacionales e internacionales</p>
+            </div>
+        </div>
+        <div class="carrusel-slide">
+            <img src="Recursos/Soldadura.jpeg" alt="Slide 3">
+            <div class="carrusel-texto">
+                <h2>Regístrate Ahora</h2>
+                <p>Forma parte de este gran equipo y construye tus propios robots</p>
+            </div>
+        </div>
+        <button class="carrusel-flecha flecha-izq" onclick="cambiarSlide(-1)">&#8249;</button>
+        <button class="carrusel-flecha flecha-der" onclick="cambiarSlide(1)">&#8250;</button>
+        <div class="carrusel-puntos" id="puntos"></div>
+    </div>
+
+    <!-- Contenido dinámico -->
+    <div><p id="informacion"></p></div>
+    <div><p id="reglamento"></p></div>
+
+    <!-- Nosotros -->
+    <div class="contenedor contenidos oculto" id="Mision">
+        <img src="Recursos/MascotaFactos.png" alt="Mascota Factos">
+        <div>
+            <p class="negritas">MISION Y VISIÓN</p>
+            <ul>
+                <li>Ser un capítulo estudiantil líder en el desarrollo de proyectos de robótica dentro de la FES Aragón, reconocido por su participación destacada en competencias nacionales e internacionales. ARX aspira a consolidarse como un espacio de formación, innovación y aprendizaje donde los estudiantes desarrollen soluciones tecnológicas que impulsen el crecimiento académico, científico y profesional de la comunidad universitaria.</li>
+                <li>Fomentar el desarrollo académico, tecnológico y profesional de los estudiantes de ingeniería de la Facultad de Estudios Superiores Aragón, mediante el diseño, construcción y programación de sistemas robóticos. A través del trabajo colaborativo, la investigación aplicada y la participación en competencias tecnológicas nacionales e internacionales, se busca fortalecer las habilidades técnicas y estratégicas de los estudiantes, promoviendo la innovación y representando dignamente a la institución.</li>
+            </ul>
+        </div>
+    </div>
+    <div class="contenedor contenidos oculto" id="Objetivos">
+        <div>
+            <p class="negritas">OBJETIVOS ESPECÍFICOS</p>
+            <ul>
+                <li>Diseñar, desarrollar y construir prototipos robóticos para participar en competencias tecnológicas como minisumo autónomo, minisumo RC, seguidor de línea, entre otras categorías.</li>
+                <li>Representar a la FES Aragón en concursos, torneos y eventos de robótica a nivel nacional e internacional.</li>
+                <li>Fomentar el aprendizaje práctico en áreas como electrónica, programación, automatización, control, diseño mecánico y modelado 3D.</li>
+                <li>Desarrollar habilidades de planeación, organización, trabajo en equipo y resolución de problemas de los integrantes del capítulo.</li>
+            </ul>
+        </div>
+        <img src="Recursos/MascotaObjetivo.png" alt="Mascota Objetivo">
+    </div>
+
+    <!-- Historial -->
+    <div class="oculto" id="Contenido">
+        <div class="tarjeta historia">
+            <div><img src="Recursos/ROBOTCOMP.jpg"></div>
+            <div><ul>
+                <li class="negritas apuntado" onclick="window.open('https://drive.google.com/drive/folders/1e_Ytg8K2twMdW6onbnin4afTPTfIcJSU','_blank')">7mo Circuito Nacional</li>
+                <li>Fecha: 29/08/2025</li>
+                <li>Integrantes: Francisco Ramirez Granados, Paula Yunuet Peña Martinez, Genaro Gabriel Hernandez Cabrera</li>
+                <li>Prototipos: SuperManito, Zuyu, GBOT</li>
+                <li>Categorías: Minisumo RC Amateur</li>
+                <li>Puesto: Primer Lugar</li>
+            </ul></div>
+        </div>
+        <div class="tarjeta historia">
+            <div><img src="Recursos/ROBOTICS46.jpg"></div>
+            <div><ul>
+                <li class="negritas apuntado" onclick="window.open('https://drive.google.com/drive/folders/1F0iAVavMRKzy_jljU4JCd3hMFeRhtFDO','_blank')">Robotics 46 2025</li>
+                <li>Fecha: ?/?/2025</li>
+                <li>Integrantes: ?</li>
+                <li>Prototipos: ?</li>
+                <li>Categorías: Minisumo RC Amateur</li>
+                <li>Puesto: Tercer Lugar</li>
+            </ul></div>
+        </div>
+        <div class="tarjeta historia">
+            <div><img src="Recursos/CompetenciaTexcoco.jpg"></div>
+            <div><ul>
+                <li class="negritas apuntado" onclick="window.open('https://drive.google.com/drive/folders/1ZqTAQG4sbCVSEG_1BtrsPVcxDu_Lf2Bw','_blank')">TEX Robotics</li>
+                <li>Fecha: ?/?/2024</li>
+                <li>Integrantes: Francisco Granados, Obeth Abimael, Manuel Zurita, Sergio Martinez</li>
+                <li>Prototipos: ?</li>
+                <li>Categorías: Minisumo Autónomo</li>
+                <li>Puesto: N/A</li>
+            </ul></div>
+        </div>
+        <div class="tarjeta historia">
+            <div><img src="Recursos/Chapingo.jpg"></div>
+            <div><ul>
+                <li class="negritas apuntado" onclick="window.open('https://drive.google.com/drive/folders/1H3ktLvxtpE46M7iOCP6ZFNtziJeIP0BR','_blank')">DIMA Chapingo</li>
+                <li>Fecha: ?/?/2024</li>
+                <li>Integrantes: Obeth Abimael, Francisco Granados, Manuel Zurita, Antonio Alvarez, Sergio Martinez</li>
+                <li>Prototipos: ?</li>
+                <li>Categorías: Minisumo Autónomo</li>
+                <li>Puesto: N/A</li>
+            </ul></div>
+        </div>
+    </div>
+
+    <!-- Acreditaciones -->
+    <div class="oculto" id="Acreditaciones">
+        <p class="negritas titulo">ACREDITACIONES Y RECONOCIMIENTOS</p>
+        <div class="tarjeta">
+            <img src="Recursos/Axolotl2025.png" alt="Torneo Axolotl2025">
+            <div class="trofeos"><ul>
+                <li>Torneo: Axolotl Tournament 2025. 8vo Torneo Nacional de Robótica TESJI.</li>
+                <li>Categoría: Seguidor de línea profesional sin turbina.</li>
+                <li>Puesto: 3er lugar</li>
+            </ul><img src="Recursos/TrofeoBronce.png"></div>
+        </div>
+        <div class="tarjeta">
+            <img src="Recursos/RoboticPeopleFest.png" alt="Torneo SOFA2025">
+            <div class="trofeos"><ul>
+                <li>Torneo: Robotic People Fest SOFA 2025.</li>
+                <li>Categoría: Minisumo RC Amateur.</li>
+                <li>Puesto: 3er lugar</li>
+            </ul><img src="Recursos/TrofeoBronce.png"></div>
+        </div>
+        <div class="tarjeta">
+            <img src="Recursos/RoboticPeopleFest2025.png" alt="Torneo RPF SOFA2025">
+            <div class="trofeos"><ul>
+                <li>Torneo: Robotic People Fest SOFA 2025.</li>
+                <li>Categoría: Velocista PRO Sin Turbina.</li>
+                <li>Puesto: 3er lugar</li>
+            </ul><img src="Recursos/TrofeoBronce.png"></div>
+        </div>
+        <div class="tarjeta">
+            <img src="Recursos/CircuitNacional.png" alt="Circuit Nacional MX">
+            <div class="trofeos"><ul>
+                <li>Torneo: NIBBLUX. CIRCUITO NACIONAL MX 2025</li>
+                <li>Categoría: Minisumo RC Amateur Motores Amarillos.</li>
+                <li>Puesto: 1er lugar</li>
+            </ul><img src="Recursos/PremioOro.png"></div>
+        </div>
+        <div class="tarjeta">
+            <img src="Recursos/Robotics.png" alt="Robotics 46">
+            <div class="trofeos"><ul>
+                <li>Torneo: ROBOTICS 46 2025.</li>
+                <li>Categoría: Minisumo RC Amateur Motores Amarillos.</li>
+                <li>Puesto: 3er lugar</li>
+            </ul><img src="Recursos/TrofeoBronce.png"></div>
+        </div>
+        <div class="tarjeta">
+            <img src="Recursos/TorneoTESJI.png" alt="Torneo TESJI">
+            <div class="trofeos"><ul>
+                <li>Torneo: 8vo Torneo Nacional de Robótica TESJI.</li>
+                <li>Categoría: Seguidor Profesional Sin Turbina.</li>
+                <li>Puesto: 3er lugar</li>
+            </ul><img src="Recursos/TrofeoBronce.png"></div>
+        </div>
+    </div>
+
+    <!-- Horario -->
+    <div class="oculto" id="Roles">
+
+    <h2 class="titulo-roles">ROLES</h2>
+
+    <div class="tarjeta-rol">
+        <img src="Recursos/Zurita.jpeg" alt="Capitán 1">
+
+        <div class="info-rol">
+            <p><strong>Nombre:</strong> Zurita Ruiz Jaime Manuel</p>
+            <p><strong>Rol:</strong> Vicepresidente</p>
+            <p>Capitán de equipo</p>
+        </div>
+    </div>
+
+    <div class="tarjeta-rol">
+        <img src="Recursos/Genaro.jpeg" alt="Capitán 2">
+
+        <div class="info-rol">
+            <p><strong>Nombre:</strong> Hernández Cabrera Genaro Gabriel</p>
+            <p>Capitán de equipo</p>
+        </div>
+    </div>
+
+    <div class="tarjeta-rol">
+        <img src="Recursos/Edgar.jpeg" alt="Capitán 3">
+
+        <div class="info-rol">
+            <p><strong>Nombre:</strong> Fragoso Siliceo Edgar</p>
+            <p><strong>Rol:</strong> Programador</p>
+            <p>Capitán de equipo</p>
+        </div>
+    </div>
+
+    <div class="tarjeta-rol">
+        <img src="Recursos/FotoCapitan4.jpg" alt="Capitán 4">
+
+        <div class="info-rol">
+            <p><strong>Nombre:</strong> Nombre del integrante</p>
+            <p><strong>Rol:</strong> Rol del integrante</p>
+            <p>Capitán de equipo</p>
+        </div>
+    </div>
+
+</div>
+
+    <!-- Pie de página -->
+    <footer class="piePagina">
+        <div class="logoFinal">
+            <img id="LogoPie" src="Recursos/logotipoARX.png" alt="Logo Pie Pagina">
+        </div>
+        <div class="logosRedes">
+            <img src="Recursos/logoFacebook.jpeg"  alt="Facebook"  onclick="window.open('https://www.facebook.com/p/Fesatronix-61573510044457/','_blank')">
+            <img src="Recursos/logoInstagram.jpeg" alt="Instagram" onclick="window.open('https://www.instagram.com/fesatronix?igsh=MTB3c281dnA4Z3A1Ng==','_blank')">
+            <img src="Recursos/logoTiktok.jpeg"    alt="Tik Tok"   onclick="window.open('https://www.tiktok.com/@fesatronix?_r=1&_t=ZS-96v9nTco00Y','_blank')">
+        </div>
+        <p>Créditos de la página: Edgar Fragoso Siliceo</p>
+        <p>© 2026 ARX Robotics. | FES ARAGÓN - UNAM</p>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <script>
+        var txtInformacion = "<br>Aquí se mostrarán las noticias<br>";
+        var Reglamento = `
+            <br>
+            <img src="Recursos/Reglamento.jpeg" alt="Reglamento" style="width:90%; max-width:500px; border-radius:8px; display:block; margin:0 auto;">
+            <br>
+        `;
+        var horario = `
+            <br>Les compartimos los horarios en los que estaremos disponibles durante este semestre para brindar información sobre el club y nuestras actividades.<br><br>
+            <img src="Recursos/Horarios.jpeg" alt="Horarios" style="width:100%; border-radius:8px;">
+        `;
+
+        function resetInfo() {
+            document.getElementById('informacion').innerHTML = "";
+            document.getElementById('reglamento').innerHTML = "";
+        }
+
+        // Oculta/muestra todos los bloques de contenido
+        var bloques = ['Mision','Objetivos','Acreditaciones','Contenido', 'Roles'];
+        function ocultarTodo() {
+            bloques.forEach(function(id) {
+                document.getElementById(id).classList.add('oculto');
+            });
+        }
+
+        function mostrarCarrusel(visible) {
+            var c = document.getElementById('carrusel');
+            visible ? c.classList.remove('oculto') : c.classList.add('oculto');
+            if (visible) reiniciarIntervalo(); else clearInterval(intervalo);
+        }
+
+        function mostrarNoticias() {
+            resetInfo();
+            ocultarTodo();
+            mostrarCarrusel(true);
+            document.getElementById('informacion').innerHTML = txtInformacion;
+        }
+        function mostrarNosotros() {
+            resetInfo();
+            ocultarTodo();
+            mostrarCarrusel(false);
+            document.getElementById('Mision').classList.remove('oculto');
+            document.getElementById('Objetivos').classList.remove('oculto');
+        }
+        function mostrarReglamento() {
+            resetInfo();
+            ocultarTodo();
+            mostrarCarrusel(false);
+            document.getElementById('reglamento').innerHTML = Reglamento;
+        }
+        function mostrarHorarios() {
+            resetInfo();
+            ocultarTodo();
+            mostrarCarrusel(false);
+            document.getElementById('informacion').innerHTML = horario;
+            document.getElementById('Roles').classList.remove('oculto');
+        }
+        function mostrarAcreditaciones() {
+            resetInfo();
+            ocultarTodo();
+            mostrarCarrusel(false);
+            document.getElementById('Acreditaciones').classList.remove('oculto');
+        }
+        function mostrarHistorial() {
+            resetInfo();
+            ocultarTodo();
+            mostrarCarrusel(false);
+            document.getElementById('Contenido').classList.remove('oculto');
+        }
+
+        // ── Carrusel ──
+        var slides     = document.querySelectorAll('.carrusel-slide');
+        var puntosCont = document.getElementById('puntos');
+        var slideActual = 0;
+        var intervalo;
+
+        slides.forEach(function(_, i) {
+            var punto = document.createElement('div');
+            punto.className = 'punto' + (i === 0 ? ' activo' : '');
+            punto.addEventListener('click', function() { irASlide(i); });
+            puntosCont.appendChild(punto);
+        });
+
+        function actualizarPuntos() {
+            document.querySelectorAll('.punto').forEach(function(p, i) {
+                p.classList.toggle('activo', i === slideActual);
+            });
+        }
+        function irASlide(n) {
+            slides[slideActual].classList.remove('activo');
+            slideActual = (n + slides.length) % slides.length;
+            slides[slideActual].classList.add('activo');
+            actualizarPuntos();
+            reiniciarIntervalo();
+        }
+        function cambiarSlide(dir) { irASlide(slideActual + dir); }
+        function reiniciarIntervalo() {
+            clearInterval(intervalo);
+            intervalo = setInterval(function() { irASlide(slideActual + 1); }, 4000);
+        }
+
+        reiniciarIntervalo();
+        mostrarNoticias();
+    </script>
+</body>
+</html>
