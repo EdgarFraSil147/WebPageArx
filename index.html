@@ -742,6 +742,171 @@
             padding: 6px;
             cursor: pointer;
         }
+        @media (max-width: 768px) {
+
+            /* ── HISTORIAL ── */
+            .tarjeta.historia {
+                flex-direction: column;
+                align-items: center;
+                margin: 16px 8px;
+            }
+            .historia img {
+                width: 95% !important;
+                max-width: 360px !important;
+            }
+            .logosHistorial {
+                font-size: 14px;
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 4px;
+                width: 100%;
+                padding: 0 4px;
+            }
+            .logosHistorial ul {
+                width: 100%;
+                padding: 0;
+            }
+            .logosHistorial ul li {
+                display: flex;
+                align-items: flex-start;
+                gap: 6px;
+                margin-top: 10px;
+                line-height: 1.5;
+                word-break: break-word;
+            }
+            .logosHistorial img {
+                width: 40px !important;
+                height: 35px !important;
+                flex-shrink: 0;
+                margin-top: 2px;
+            }
+            .titulo-evento {
+                font-size: clamp(1.1rem, 5vw, 1.6rem);
+                margin-bottom: 20px;
+                word-break: break-word;
+            }
+            .titulo-evento::after {
+                width: 70px;
+            }
+            .enlaces {
+                font-size: 11px;
+                word-break: break-all;
+            }
+            /* ── ACREDITACIONES ── */
+            .tarjeta {
+                flex-direction: column;
+                align-items: center;
+                margin: 16px;
+            }
+            .trofeos {
+                width: 100%;
+                text-align: center;
+            }
+
+            /* ── ROLES ── */
+            #Roles {
+                margin: 16px;
+            }
+            .tarjeta-rol {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+                gap: 16px;
+                margin-bottom: 24px;
+                padding-bottom: 24px;
+                border-bottom: 1px solid #e0e0e0;
+            }
+            .tarjeta-rol img {
+                width: 160px;
+                height: 160px;
+            }
+            .info-rol {
+                font-size: 15px;
+            }
+            .titulo-roles {
+                font-size: 28px;
+            }
+
+            /* ── TABLA DE HORARIOS ── */
+            .horarios-main-layout {
+                flex-direction: column;
+            }
+            .horarios-legend-card {
+                width: 100%;
+            }
+            .horarios-page {
+                padding: 1rem 8px;
+            }
+
+            /* ── ENCARGADOS ── */
+            .representantes {
+                gap: 20px;
+                margin: 20px 10px;
+            }
+            .representante img {
+                width: 160px;
+                height: 160px;
+            }
+            .nombre {
+                font-size: 16px;
+            }
+
+            /* ── VIDEO TIKTOK ── */
+            .video-contenedor {
+                padding: 10px 8px;
+            }
+
+            /* ── COMPETENCIAS ── */
+            .competencias {
+                gap: 20px;
+                margin: 20px 10px;
+            }
+            .competencias img {
+                max-width: 100%;
+                height: auto;
+                width: 100%;
+            }
+
+            /* ── NOSOTROS ── */
+            .contenedor {
+                flex-direction: column;
+                align-items: center;
+                margin: 12px;
+            }
+            .contenidos img {
+                height: auto;
+                width: 80%;
+                max-width: 280px;
+            }
+
+            /* ── TÍTULOS ── */
+            .titulo::after {
+                left: 50%;
+                transform: translateX(-50%);
+            }
+            .titulo-evento::after {
+                width: 80px;
+            }
+
+            /* ── MINI CARRUSEL ── */
+            .mini-carrusel-wrapper {
+                flex-direction: column;
+                margin: 16px 10px;
+                gap: 16px;
+            }
+            .mini-carrusel {
+                width: 100%;
+            }
+
+            /* ── BARRA DE NAVEGACIÓN ── */
+            .barraContenidos {
+                justify-content: center;
+            }
+            .botonInformacion {
+                padding: 0 8px;
+                font-size: 0.7rem;
+            }
+        }
     </style>
 </head>
 <body>
